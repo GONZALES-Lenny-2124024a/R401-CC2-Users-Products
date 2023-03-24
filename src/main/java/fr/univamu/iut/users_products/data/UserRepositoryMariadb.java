@@ -141,4 +141,28 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Method which update the user's password
+     * @param email the user's email
+     * @param password the user's password
+     * @return a User object or null (if the query failed
+     */
+    public User updatePassword(String email, String password) {
+        String query = "UPDATE Users SET PASSWORD=? WHERE EMAIL=?";
+
+        User user = null;
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setString(1, password);
+            ps.setString(2,email);
+
+            ps.executeUpdate();
+            user = new User(email, password);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return user;
+    }
+
 }

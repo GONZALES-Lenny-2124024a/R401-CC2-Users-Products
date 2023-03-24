@@ -38,4 +38,12 @@ public interface UserRepositoryInterface {
      * @return if the deletion succeed
      */
     boolean removeUser(String email);
+
+    /**
+     * Method which update the user's password
+     * @param email the user's email
+     * @param password the user's password
+     * @return a User object or null (if the query failed
+     */
+    User updatePassword(String email, String password);
 }

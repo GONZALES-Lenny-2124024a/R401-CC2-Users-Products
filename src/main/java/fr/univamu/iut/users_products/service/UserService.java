@@ -71,7 +71,7 @@ public class UserService {
     }
 
     /**
-     * Methods to register an user and return the json of the user or an error
+     * Method to register an user and return the json of the user or an error
      * @param email user's email
      * @param password user's password
      * @return Json of the user object
@@ -84,7 +84,7 @@ public class UserService {
         }
 
         user = userRepo.registerUser(email, password);
-        if (user == null) {
+        if(user == null) {
             return Errors.INTERNAL_ERROR.getDescription();
         }
 
@@ -98,6 +98,11 @@ public class UserService {
         return userJson;
     }
 
+    /**
+     * Method to remove an user and return the status
+     * @param email the user's email
+     * @return the description status
+     */
     public String removeUser(String email) {
         User user = userRepo.getUser(email);
         if(user == null) {
@@ -110,5 +115,32 @@ public class UserService {
         }
 
         return Success.DONE_SUCCESSFULLY.getDescription();
+    }
+
+    /**
+     * Method to update the user's password
+     * @param email the user's email
+     * @param password the user's password
+     * @return the json of the User object or others specific status
+     */
+    public String updatePasswordJSON(String email, String password) {
+        User user = userRepo.getUser(email);
+        if(user == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
+
+        user = userRepo.updatePassword(email, password);
+        if(user == null) {
+            return Errors.INTERNAL_ERROR.getDescription();
+        }
+
+        String userJson = null;
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            userJson = jsonb.toJson(user);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return userJson;
     }
 }
