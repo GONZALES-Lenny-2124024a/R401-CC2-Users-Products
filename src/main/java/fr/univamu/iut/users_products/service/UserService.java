@@ -1,8 +1,10 @@
 package fr.univamu.iut.users_products.service;
 
+import fr.univamu.iut.users_products.Constants.Errors;
 import fr.univamu.iut.users_products.domain.User;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import jakarta.ws.rs.NotFoundException;
 
 import java.util.ArrayList;
 
@@ -67,5 +69,31 @@ public class UserService {
         return result;
     }
 
+    /**
+     * Methods to register an user and return the json of the user or an error
+     * @param email user's email
+     * @param password user's password
+     * @return Json of the user object
+     */
+    public String registerUserJSON(String email, String password) {
+        // Verify if the resource already exists
+        User user = userRepo.getUser(email);
+        if( user != null) {
+            return Errors.ALREADY_EXISTS.getDescription(); // Errors::ALREADY_EXISTS (string)
+        }
 
+        user = userRepo.registerUser(email, password);
+        if (user == null) {
+            return Errors.INTERNAL_ERROR.getDescription(); // Errors::CREATION_FAILED  (string)
+        }
+
+        String userJson = null;
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            userJson = jsonb.toJson(user);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return userJson;    //  Json object (string)
+    }
 }

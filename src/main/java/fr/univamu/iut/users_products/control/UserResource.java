@@ -1,13 +1,15 @@
 package fr.univamu.iut.users_products.control;
 
+import fr.univamu.iut.users_products.Constants.Errors;
 import fr.univamu.iut.users_products.service.UserRepositoryInterface;
 import fr.univamu.iut.users_products.service.UserService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Response;
 
 /**
- * Ressource associée aux livres
+ * Ressource associée aux utilisateurs
  * (point d'accès de l'API REST)
  */
 @Path("/users")
@@ -68,4 +70,19 @@ public class UserResource {
         return result;
     }
 
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public Response registerUser(@FormParam("email") String email, @FormParam("password") String password) {
+        String result = service.registerUserJSON(email, password);
+
+        if (result.equals(Errors.ALREADY_EXISTS.getDescription())) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+
+        if (result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(result).build();
+    }
 }
