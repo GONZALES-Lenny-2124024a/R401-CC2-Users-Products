@@ -25,7 +25,23 @@ public interface UserRepositoryInterface {
     User getUser(String email);
 
     /**
-     * Method which create an user
+     * Method to return the user with its id
+     * @param id user's id
+     * @return the User object or null
+     */
+    User getUser(int id);
+
+    /**
+     * Method to return the user with its email and password
+     * @param email user's email
+     * @param password user's password
+     * @return the User object or null
+     */
+    User getUser(String email, String password);
+
+
+    /**
+     * Method which create a user
      * @param email the user's email
      * @param password the user's password
      * @return User the User returned
@@ -33,17 +49,17 @@ public interface UserRepositoryInterface {
     User registerUser(String email, String password);
 
     /**
-     * Method which remove an user
-     * @param email the user's email
+     * Method which remove a user
+     * @param id the user's id
      * @return if the deletion succeed
      */
-    boolean removeUser(String email);
+    boolean removeUser(int id);
 
     /**
      * Method which update the user's password
-     * @param email the user's email
+     * @param id the user's id
      * @param password the user's password
      * @return a User object or null (if the query failed
      */
-    User updatePassword(String email, String password);
+    User updatePassword(int id, String password);
 }

@@ -53,21 +53,41 @@ public class UserResource {
 
     /**
      * Endpoint permettant de publier les informations d'un livre dont la référence est passée paramètre dans le chemin
-     * @param email email de l'utilisateur demandée
+     * @param id user's id
      * @return les informations du livre recherché au format JSON
      */
     @GET
-    @Path("{email}")
+    @Path("{id}")
     @Produces("application/json")
-    public String getUser( @PathParam("email") String email){
-
-        String result = service.getUserJSON(email);
+    public Response getUser( @PathParam("id") int id){
+        String result = service.getUserJSON(id);
 
         // si le livre n'a pas été trouvé
-        if( result == null )
-            throw new NotFoundException();
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
-        return result;
+        return Response.ok(result).build();
+    }
+
+    /**
+     * Endpoint permettant de publier les informations d'un livre dont la référence est passée paramètre dans le chemin
+     * @param email email de l'utilisateur demandée
+     * @return les informations du livre recherché au format JSON
+     */
+    @POST
+    @Path("/authenticate")
+    @Consumes("application/x-www-form-urlencoded")
+    public Response authenticate( @FormParam("email") String email, @FormParam("password") String password){
+
+        String result = service.authenticateJSON(email, password);
+
+        // si le livre n'a pas été trouvé
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(result).build();
     }
 
     @POST
@@ -87,10 +107,10 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("{email}")
+    @Path("{id}")
     @Produces("application/json")
-    public Response removeUser(@PathParam("email") String email) {
-        String result = service.removeUser(email);
+    public Response removeUser(@PathParam("id") int id) {
+        String result = service.removeUser(id);
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -104,8 +124,8 @@ public class UserResource {
 
     @PATCH
     @Consumes("application/x-www-form-urlencoded")
-    public Response updatePassword(@FormParam("email") String email, @FormParam("password") String password) {
-        String result = service.updatePasswordJSON(email, password);
+    public Response updatePassword(@FormParam("id") int id, @FormParam("password") String password) {
+        String result = service.updatePasswordJSON(id, password);
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
             return Response.status(Response.Status.NOT_FOUND).build();

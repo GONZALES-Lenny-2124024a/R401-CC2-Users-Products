@@ -50,25 +50,46 @@ public class UserService {
 
     /**
      * Méthode retournant au format JSON les informations sur un utilisateur recherché
-     * @param email l'email de l'utilisateur recherché
+     * @param id user's id
      * @return une chaîne de caractère contenant les informations au format JSON
      */
-    public String getUserJSON( String email ){
+    public String getUserJSON( int id ){
         String result = null;
-        User myUser = userRepo.getUser(email);
+        User user = userRepo.getUser(id);
+        if(user == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
 
-        // si le livre a été trouvé
-        if( myUser != null ) {
-
-            // création du json et conversion du livre
-            try (Jsonb jsonb = JsonbBuilder.create()) {
-                result = jsonb.toJson(myUser);
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-            }
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            result = jsonb.toJson(user);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
         }
         return result;
     }
+
+    /**
+     * Method which return the json of the User
+     * @param email user's email
+     * @param password user's password
+     * @return the User object or null if it doesn't exist
+     */
+    public String authenticateJSON(String email, String password){
+        String result = null;
+        User user = userRepo.getUser(email, password);
+        if(user == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
+
+        // création du json et conversion du livre
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            result = jsonb.toJson(user);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return result;
+    }
+
 
     /**
      * Method to register an user and return the json of the user or an error
@@ -100,16 +121,16 @@ public class UserService {
 
     /**
      * Method to remove an user and return the status
-     * @param email the user's email
+     * @param id the user's id
      * @return the description status
      */
-    public String removeUser(String email) {
-        User user = userRepo.getUser(email);
+    public String removeUser(int id) {
+        User user = userRepo.getUser(id);
         if(user == null) {
             return Errors.RESOURCE_NOT_EXISTS.getDescription();
         }
 
-        boolean status = userRepo.removeUser(email);
+        boolean status = userRepo.removeUser(id);
         if(!status) {
             return Errors.INTERNAL_ERROR.getDescription();
         }
@@ -119,17 +140,17 @@ public class UserService {
 
     /**
      * Method to update the user's password
-     * @param email the user's email
+     * @param id the user's id
      * @param password the user's password
      * @return the json of the User object or others specific status
      */
-    public String updatePasswordJSON(String email, String password) {
-        User user = userRepo.getUser(email);
+    public String updatePasswordJSON(int id, String password) {
+        User user = userRepo.getUser(id);
         if(user == null) {
             return Errors.RESOURCE_NOT_EXISTS.getDescription();
         }
 
-        user = userRepo.updatePassword(email, password);
+        user = userRepo.updatePassword(id, password);
         if(user == null) {
             return Errors.INTERNAL_ERROR.getDescription();
         }

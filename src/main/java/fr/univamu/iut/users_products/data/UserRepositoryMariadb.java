@@ -56,13 +56,14 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
             // récupération du premier (et seul) tuple résultat
             while ( result.next() )
             {
+                int id = result.getInt("id");
                 String email = result.getString("email");
                 String password = result.getString("password");
 
                 // création du livre courant
-                User currentBook = new User(email, password);
+                User user = new User(id, email, password);
 
-                listUsers.add(currentBook);
+                listUsers.add(user);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -70,28 +71,78 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         return listUsers;
     }
 
+    /**
+     * Méthode retournant l'utilisateur dont l'id est passée en paramètre
+     * @param email Email de l'utilisateur
+     * @return un objet User représentant l'utilisateur recherché
+     */
     @Override
     public User getUser(String email) {
-
         User selectedUser = null;
-
         String query = "SELECT * FROM Users WHERE email=?";
 
-        // construction et exécution d'une requête préparée
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
             ps.setString(1, email);
 
-            // exécution de la requête
             ResultSet result = ps.executeQuery();
-
-            // récupération du premier (et seul) tuple résultat
-            // (si la référence du livre est valide)
-            if( result.next() )
-            {
+            if( result.next() ) {
+                int id = result.getInt("id");
                 String password = result.getString("password");
 
-                // création et initialisation de l'objet Book
-                selectedUser = new User(email,password);
+                selectedUser = new User(id, email,password);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return selectedUser;
+    }
+
+    /**
+     * Method to return the user with its id
+     * @param id user's id
+     * @return the User object or null
+     */
+    @Override
+    public User getUser(int id) {
+        User selectedUser = null;
+        String query = "SELECT * FROM Users WHERE id=?";
+
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setInt(1, id);
+
+            ResultSet result = ps.executeQuery();
+            if( result.next() ) {
+                String email = result.getString("email");
+                String password = result.getString("password");
+
+                selectedUser = new User(id, email,password);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return selectedUser;
+    }
+
+    /**
+     * Method to return the user with its email and password
+     * @param email user's email
+     * @param password user's password
+     * @return the User object or null
+     */
+    @Override
+    public User getUser(String email, String password) {
+        User selectedUser = null;
+        String query = "SELECT * FROM Users WHERE email=? AND password=?";
+
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setString(1, email);
+            ps.setString(2,password);
+
+            ResultSet result = ps.executeQuery();
+            if( result.next() ) {
+                int id = result.getInt("id");
+
+                selectedUser = new User(id, email,password);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -126,15 +177,15 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
 
 
     /**
-     * Method which remove an user
-     * @param email the user's email
+     * Method which remove a user
+     * @param id the user's id
      * @return if the deletion succeed
      */
-    public boolean removeUser(String email) {
-        String query = "DELETE FROM Users WHERE EMAIL=?";
+    public boolean removeUser(int id) {
+        String query = "DELETE FROM Users WHERE ID=?";
 
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
-            ps.setString(1, email);
+            ps.setInt(1, id);
             return (ps.executeUpdate() > 0);    // The deletion suceed
 
         } catch (SQLException e) {
@@ -144,20 +195,20 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
 
     /**
      * Method which update the user's password
-     * @param email the user's email
+     * @param id the user's id
      * @param password the user's password
      * @return a User object or null (if the query failed
      */
-    public User updatePassword(String email, String password) {
-        String query = "UPDATE Users SET PASSWORD=? WHERE EMAIL=?";
+    public User updatePassword(int id, String password) {
+        String query = "UPDATE Users SET PASSWORD=? WHERE ID=?";
 
         User user = null;
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
             ps.setString(1, password);
-            ps.setString(2,email);
+            ps.setInt(2,id);
 
             ps.executeUpdate();
-            user = new User(email, password);
+            user = new User(id, password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
