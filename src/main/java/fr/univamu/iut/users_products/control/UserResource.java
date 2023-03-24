@@ -75,14 +75,30 @@ public class UserResource {
     public Response registerUser(@FormParam("email") String email, @FormParam("password") String password) {
         String result = service.registerUserJSON(email, password);
 
-        if (result.equals(Errors.ALREADY_EXISTS.getDescription())) {
-            return Response.status(Response.Status.CONFLICT).build();
+        if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
+            return Response.status( Response.Status.CONFLICT ).build();
         }
 
-        if (result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
 
         return Response.ok(result).build();
+    }
+
+    @DELETE
+    @Path("{email}")
+    @Produces("application/json")
+    public Response removeUser(@PathParam("email") String email) {
+        String result = service.removeUser(email);
+
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.status(Response.Status.OK).build();
     }
 }

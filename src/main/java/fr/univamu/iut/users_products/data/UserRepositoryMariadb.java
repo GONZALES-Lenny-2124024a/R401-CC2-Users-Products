@@ -99,6 +99,13 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         return selectedUser;
     }
 
+
+    /**
+     * Method which create an user
+     * @param email the user's email
+     * @param password the user's password
+     * @return User the User returned
+     */
     @Override
     public User registerUser(String email, String password) {
         String query = "INSERT INTO Users (email, password) VALUES (?,?)";
@@ -117,4 +124,21 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         return user;
     }
 
+
+    /**
+     * Method which remove an user
+     * @param email the user's email
+     * @return if the deletion succeed
+     */
+    public boolean removeUser(String email) {
+        String query = "DELETE FROM Users WHERE EMAIL=?";
+
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setString(1, email);
+            return (ps.executeUpdate() > 0);    // The deletion suceed
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

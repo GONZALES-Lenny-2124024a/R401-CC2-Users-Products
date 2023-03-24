@@ -1,6 +1,7 @@
 package fr.univamu.iut.users_products.service;
 
 import fr.univamu.iut.users_products.Constants.Errors;
+import fr.univamu.iut.users_products.Constants.Success;
 import fr.univamu.iut.users_products.domain.User;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
@@ -79,12 +80,12 @@ public class UserService {
         // Verify if the resource already exists
         User user = userRepo.getUser(email);
         if( user != null) {
-            return Errors.ALREADY_EXISTS.getDescription(); // Errors::ALREADY_EXISTS (string)
+            return Errors.ALREADY_EXISTS.getDescription();
         }
 
         user = userRepo.registerUser(email, password);
         if (user == null) {
-            return Errors.INTERNAL_ERROR.getDescription(); // Errors::CREATION_FAILED  (string)
+            return Errors.INTERNAL_ERROR.getDescription();
         }
 
         String userJson = null;
@@ -94,6 +95,20 @@ public class UserService {
             System.err.println(e.getMessage());
         }
 
-        return userJson;    //  Json object (string)
+        return userJson;
+    }
+
+    public String removeUser(String email) {
+        User user = userRepo.getUser(email);
+        if(user == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
+
+        boolean status = userRepo.removeUser(email);
+        if(!status) {
+            return Errors.INTERNAL_ERROR.getDescription();
+        }
+
+        return Success.DONE_SUCCESSFULLY.getDescription();
     }
 }

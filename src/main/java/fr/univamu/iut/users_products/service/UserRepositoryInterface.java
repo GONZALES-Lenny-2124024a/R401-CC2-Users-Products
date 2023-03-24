@@ -31,4 +31,11 @@ public interface UserRepositoryInterface {
      * @return User the User returned
      */
     User registerUser(String email, String password);
+
+    /**
+     * Method which remove an user
+     * @param email the user's email
+     * @return if the deletion succeed
+     */
+    boolean removeUser(String email);
 }
