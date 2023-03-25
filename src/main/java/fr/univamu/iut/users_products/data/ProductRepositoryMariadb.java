@@ -67,10 +67,11 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
                 float price = result.getFloat("price");
                 String unit = result.getString("unit");
                 int quantity = result.getInt("quantity");
+                int quantityAvailable = result.getInt("quantityAvailable");
 
 
                 // création du livre courant
-                Product product = new Product(id, name, description, price, unit, quantity);
+                Product product = new Product(id, name, description, price, unit, quantity, quantityAvailable);
 
                 listProducts.add(product);
             }
@@ -99,8 +100,9 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
                 float price = result.getFloat("price");
                 String unit = result.getString("unit");
                 int quantity = result.getInt("quantity");
+                int quantityAvailable = result.getInt("quantityAvailable");
 
-                product = new Product(id, name, description,price, unit, quantity);
+                product = new Product(id, name, description,price, unit, quantity,quantityAvailable);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -114,7 +116,7 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
      * @return a Product object
      */
     public Product getProduct(Product product) {
-        String query = "SELECT * FROM Products WHERE name=? AND description=? AND price=? AND unit=? AND quantity=?";
+        String query = "SELECT * FROM Products WHERE name=? AND description=? AND price=? AND unit=? AND quantity=? AND quantityAvailable=?";
         Product productSelected = null;
 
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
@@ -123,12 +125,13 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
             ps.setFloat(3, product.getPrice());
             ps.setString(4, product.getUnit());
             ps.setInt(5, product.getQuantity());
+            ps.setInt(6, product.getQuantityAvailable());
 
             ResultSet result = ps.executeQuery();
             if( result.next() ) {
                 int id = result.getInt("id");
 
-                productSelected = new Product(id, product.getName(), product.getDescription(), product.getPrice(), product.getUnit(), product.getQuantity());
+                productSelected = new Product(id, product.getName(), product.getDescription(), product.getPrice(), product.getUnit(), product.getQuantity(), product.getQuantityAvailable());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -143,15 +146,16 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
      * @return if the update worked or not
      */
     public boolean updateProduct(Product product) {
-        String query = "UPDATE Products SET name=?, description=?, price=?, unit=?, quantity=? WHERE id=?";
+        String query = "UPDATE Products SET name=?, description=?, price=?, quantity=?, unit=?, quantityAvailable=? WHERE id=?";
 
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
             ps.setFloat(3, product.getPrice());
-            ps.setString(4, product.getUnit());
-            ps.setInt(5, product.getQuantity());
-            ps.setInt(6,product.getId());
+            ps.setInt(4, product.getQuantity());
+            ps.setString(5, product.getUnit());
+            ps.setInt(6, product.getQuantityAvailable());
+            ps.setInt(7,product.getId());
 
             int result = ps.executeUpdate();
             return (result > 0);
@@ -166,14 +170,15 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
      * @return if the creation worked
      */
     public boolean createProduct(Product product) {
-        String query = "INSERT INTO Products (name, description, price, unit, quantity) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO Products (name, description, price, quantity, unit, quantityAvailable) VALUES (?,?,?,?,?,?)";
 
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
             ps.setFloat(3, product.getPrice());
-            ps.setString(4, product.getUnit());
-            ps.setInt(5, product.getQuantity());
+            ps.setInt(4, product.getQuantity());
+            ps.setString(5, product.getUnit());
+            ps.setInt(6, product.getQuantityAvailable());
 
             int result = ps.executeUpdate();
             return (result > 0);

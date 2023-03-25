@@ -68,7 +68,7 @@ public class ProductResource {
     @PATCH
     @Path("{id}")
     @Consumes("application/x-www-form-urlencoded")
-    public Response reduceProductQuantity(@PathParam("id") int id, @FormParam("quantity") int quantity) {
+    public Response reduceProductQuantityAvailable(@PathParam("id") int id, @FormParam("quantity") int quantity) {
         String result = service.reduceProductQuantityJSON(id, quantity);
 
         if (result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
@@ -83,8 +83,8 @@ public class ProductResource {
 
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response createProduct(@FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity) {
-        String result = service.createProduct(name, description, price, unit, quantity);
+    public Response createProduct(@FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
+        String result = service.createProduct(name, description, price, unit, quantity,quantityAvailable);
 
         if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
             return Response.status( Response.Status.CONFLICT ).build();

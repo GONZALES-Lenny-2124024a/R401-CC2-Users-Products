@@ -65,12 +65,12 @@ public class ProductService {
         }
 
         // Verify if there is enough quantity
-        if(quantity > product.getQuantity()) {
+        if(quantity > product.getQuantityAvailable()) {
             return Errors.NOT_ENOUGH_QUANTITY.getDescription();
         }
 
         // Verify if the update worked
-        product.setQuantity(product.getQuantity() - quantity);
+        product.setQuantityAvailable(product.getQuantityAvailable() - quantity);
         boolean status = productRepo.updateProduct(product);
         if(!status) {
             return Errors.INTERNAL_ERROR.getDescription();
@@ -88,11 +88,11 @@ public class ProductService {
     }
 
 
-    public String createProduct(String name, String description, float price, String unit, int quantity) {
-        Product product = new Product(name, description, price, unit, quantity);
+    public String createProduct(String name, String description, float price, String unit, int quantity, int quantityAvailable) {
+        Product product = new Product(name, description, price, unit, quantity,quantityAvailable);
 
         Product productAlreadyExist = productRepo.getProduct(product);
-        if(productAlreadyExist == null) {
+        if(productAlreadyExist != null) {
             return Errors.ALREADY_EXISTS.getDescription();
         }
 
