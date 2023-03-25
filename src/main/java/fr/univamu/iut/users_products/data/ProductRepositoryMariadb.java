@@ -1,6 +1,7 @@
 package fr.univamu.iut.users_products.data;
 
 import fr.univamu.iut.users_products.domain.Product;
+import fr.univamu.iut.users_products.domain.User;
 import fr.univamu.iut.users_products.service.ProductRepositoryInterface;
 
 import java.io.Closeable;
@@ -108,6 +109,35 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
     }
 
     /**
+     * Method which return a Product by a Product object
+     * @param product Product object
+     * @return a Product object
+     */
+    public Product getProduct(Product product) {
+        String query = "SELECT * FROM Products WHERE name=? AND description=? AND price=? AND unit=? AND quantity=?";
+        Product productSelected = null;
+
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setString(1, product.getName());
+            ps.setString(2, product.getDescription());
+            ps.setFloat(3, product.getPrice());
+            ps.setString(4, product.getUnit());
+            ps.setInt(5, product.getQuantity());
+
+            ResultSet result = ps.executeQuery();
+            if( result.next() ) {
+                int id = result.getInt("id");
+
+                productSelected = new Product(id, product.getName(), product.getDescription(), product.getPrice(), product.getUnit(), product.getQuantity());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return productSelected;
+    }
+
+
+    /**
      * Method which update a product
      * @param product the new product object
      * @return if the update worked or not
@@ -130,4 +160,42 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
         }
     }
 
+    /**
+     * Method which create a product
+     * @param product the product to create
+     * @return if the creation worked
+     */
+    public boolean createProduct(Product product) {
+        String query = "INSERT INTO Products (name, description, price, unit, quantity) VALUES (?,?,?,?,?)";
+
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setString(1, product.getName());
+            ps.setString(2, product.getDescription());
+            ps.setFloat(3, product.getPrice());
+            ps.setString(4, product.getUnit());
+            ps.setInt(5, product.getQuantity());
+
+            int result = ps.executeUpdate();
+            return (result > 0);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * Method which remove a product
+     * @param id the product's id
+     * @return if the deletion worked or not
+     */
+    public boolean removeProduct(int id) {
+        String query = "DELETE FROM Products WHERE ID=?";
+
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+            ps.setInt(1, id);
+            return (ps.executeUpdate() > 0);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

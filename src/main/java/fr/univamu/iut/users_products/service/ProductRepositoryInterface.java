@@ -25,9 +25,30 @@ public interface ProductRepositoryInterface {
     Product getProductById(int id);
 
     /**
+     * Method which return a Product by a Product object
+     * @param product Product object
+     * @return a Product object
+     */
+    Product getProduct(Product product);
+
+    /**
      * Method which update a product
      * @param product the new product object
      * @return if the update worked or not
      */
     boolean updateProduct(Product product);
+
+    /**
+     * Method which create a product
+     * @param product the product to create
+     * @return if the creation worked
+     */
+    boolean createProduct(Product product);
+
+    /**
+     * Method which remove a product
+     * @param id the product's id
+     * @return if the deletion worked or not
+     */
+    boolean removeProduct(int id);
 }

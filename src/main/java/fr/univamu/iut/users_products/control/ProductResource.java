@@ -80,4 +80,36 @@ public class ProductResource {
 
         return Response.ok(result).build();
     }
+
+    @POST
+    @Consumes("application/x-www-form-urlencoded")
+    public Response createProduct(@FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity) {
+        String result = service.createProduct(name, description, price, unit, quantity);
+
+        if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
+            return Response.status( Response.Status.CONFLICT ).build();
+        }
+
+        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(result).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Produces("application/json")
+    public Response removeProduct(@PathParam("id") int id) {
+        String result = service.removeProduct(id);
+
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.status(Response.Status.OK).build();
+    }
 }

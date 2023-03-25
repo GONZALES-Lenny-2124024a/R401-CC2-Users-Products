@@ -1,7 +1,9 @@
 package fr.univamu.iut.users_products.service;
 
 import fr.univamu.iut.users_products.Constants.Errors;
+import fr.univamu.iut.users_products.Constants.Success;
 import fr.univamu.iut.users_products.domain.Product;
+import fr.univamu.iut.users_products.domain.User;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 
@@ -83,5 +85,50 @@ public class ProductService {
         }
 
         return productJson;
+    }
+
+
+    public String createProduct(String name, String description, float price, String unit, int quantity) {
+        Product product = new Product(name, description, price, unit, quantity);
+
+        Product productAlreadyExist = productRepo.getProduct(product);
+        if(productAlreadyExist == null) {
+            return Errors.ALREADY_EXISTS.getDescription();
+        }
+
+        boolean status = productRepo.createProduct(product);
+        if(!status) {
+            return Errors.INTERNAL_ERROR.getDescription();
+        }
+
+        // Get the json Product
+        String productJson = null;
+        try( Jsonb jsonb = JsonbBuilder.create()){
+            productJson = jsonb.toJson(product);
+        } catch (Exception e){
+            System.err.println( e.getMessage() );
+        }
+
+        return productJson;
+    }
+
+
+    /**
+     * Method to remove a product and return the status
+     * @param id the product's id
+     * @return the description status
+     */
+    public String removeProduct(int id) {
+        Product product = productRepo.getProductById(id);
+        if(product == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
+
+        boolean status = productRepo.removeProduct(id);
+        if(!status) {
+            return Errors.INTERNAL_ERROR.getDescription();
+        }
+
+        return Success.DONE_SUCCESSFULLY.getDescription();
     }
 }

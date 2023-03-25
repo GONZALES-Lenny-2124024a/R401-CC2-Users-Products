@@ -9,7 +9,11 @@ public class Product {
     private int quantity;
 
     public Product(int id, String name, String description, float price, String unit, int quantity) {
+        this(name,description,price,unit,quantity);
         this.id = id;
+    }
+
+    public Product(String name, String description, float price, String unit, int quantity) {
         this.name = name;
         this.description = description;
         this.price = price;
