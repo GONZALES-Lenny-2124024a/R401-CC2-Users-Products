@@ -131,4 +131,37 @@ public class ProductService {
 
         return Success.DONE_SUCCESSFULLY.getDescription();
     }
+
+    /**
+     * Method which update the entire Product tuple
+     * @param id the product's id
+     * @param name the product's name
+     * @param description the product's description
+     * @param price the product's price
+     * @param unit the product's unit
+     * @param quantity the product's quantity
+     * @param quantityAvailable the product's quantityAvailable
+     * @return the json of the Product object or others specific status
+     */
+    public String updateProductJSON(int id, String name, String description, float price, String unit, int quantity, int quantityAvailable) {
+        Product product = productRepo.getProductById(id);
+        if(product == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
+
+        product = new Product(id,name, description, price, unit, quantity, quantityAvailable);
+        boolean status = productRepo.updateProduct(product);
+        if(!status) {
+            return Errors.INTERNAL_ERROR.getDescription();
+        }
+
+        String productJson = null;
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            productJson = jsonb.toJson(product);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return productJson;
+    }
 }

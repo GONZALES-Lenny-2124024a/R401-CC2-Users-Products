@@ -15,6 +15,8 @@ import jakarta.ws.rs.core.Response;
 @Path("/users")
 @ApplicationScoped
 public class UserResource {
+    private static final String authorizationToken = "57ac26e6fae7a272cd2bc33b5a56ebb0eabdb2d2aca926a33c8da2ba63a969e790f1e698d51ef5a94fc62ae4f93606c9a44bfd986fad20cf4e8d7d30680a35d1";
+
 
     /**
      * Service utilisé pour accéder aux données des utilisateurs et récupérer/modifier leurs informations
@@ -47,8 +49,11 @@ public class UserResource {
      */
     @GET
     @Produces("application/json")
-    public String getAllUsers() {
-        return service.getAllUsersJSON();
+    public Response getAllUsers(@HeaderParam("Authorization") String authHeader) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        return Response.ok(service.getAllUsersJSON()).build();
     }
 
     /**
@@ -59,7 +64,11 @@ public class UserResource {
     @GET
     @Path("{id}")
     @Produces("application/json")
-    public Response getUser( @PathParam("id") int id){
+    public Response getUser(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id){
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
         String result = service.getUserJSON(id);
 
         // si le livre n'a pas été trouvé
@@ -78,8 +87,10 @@ public class UserResource {
     @POST
     @Path("/authenticate")
     @Consumes("application/x-www-form-urlencoded")
-    public Response authenticate( @FormParam("email") String email, @FormParam("password") String password){
-
+    public Response authenticate(@HeaderParam("Authorization") String authHeader, @FormParam("email") String email, @FormParam("password") String password){
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.authenticateJSON(email, password);
 
         // si le livre n'a pas été trouvé
@@ -92,7 +103,10 @@ public class UserResource {
 
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response registerUser(@FormParam("email") String email, @FormParam("password") String password) {
+    public Response registerUser(@HeaderParam("Authorization") String authHeader, @FormParam("email") String email, @FormParam("password") String password) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.registerUserJSON(email, password);
 
         if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
@@ -109,7 +123,10 @@ public class UserResource {
     @DELETE
     @Path("{id}")
     @Produces("application/json")
-    public Response removeUser(@PathParam("id") int id) {
+    public Response removeUser(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.removeUser(id);
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
@@ -124,8 +141,29 @@ public class UserResource {
 
     @PATCH
     @Consumes("application/x-www-form-urlencoded")
-    public Response updatePassword(@FormParam("id") int id, @FormParam("password") String password) {
+    public Response updatePassword(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("password") String password) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.updatePasswordJSON(id, password);
+
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(result).build();
+    }
+
+    @PATCH
+    @Consumes("application/x-www-form-urlencoded")
+    public Response updateUser(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("password") String email, @FormParam("password") String password) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        String result = service.updateUserJSON(id, email, password);
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
             return Response.status(Response.Status.NOT_FOUND).build();

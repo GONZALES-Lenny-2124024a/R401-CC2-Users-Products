@@ -1,7 +1,6 @@
 package fr.univamu.iut.users_products.control;
 
 import fr.univamu.iut.users_products.Constants.Errors;
-import fr.univamu.iut.users_products.domain.Product;
 import fr.univamu.iut.users_products.service.ProductRepositoryInterface;
 import fr.univamu.iut.users_products.service.ProductService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -16,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/products")
 @ApplicationScoped
 public class ProductResource {
+    private static final String authorizationToken = "d8a0973dd27f506e0eafa1189dc181b6fcce7e1286a413398d39abcfb67341ee938f4a5f8e811836aa3fc363d5e268b3edc96594d936e9479d2f3f9449144e3f";
 
     /**
      * Service utilisé pour accéder aux données des utilisateurs et récupérer/modifier leurs informations
@@ -48,14 +48,20 @@ public class ProductResource {
      */
     @GET
     @Produces("application/json")
-    public String getAllProducts() {
-        return service.getAllProductsJSON();
+    public Response getAllProducts(@HeaderParam("Authorization") String authHeader) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        return Response.ok(service.getAllProductsJSON()).build();
     }
 
     @GET
     @Path("{id}")
     @Produces("application/json")
-    public Response getProductById(@PathParam("id") int id) {
+    public Response getProductById(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.getProductByIdJSON(id);
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
@@ -68,7 +74,10 @@ public class ProductResource {
     @PATCH
     @Path("{id}")
     @Consumes("application/x-www-form-urlencoded")
-    public Response reduceProductQuantityAvailable(@PathParam("id") int id, @FormParam("quantity") int quantity) {
+    public Response reduceProductQuantityAvailable(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, @FormParam("quantity") int quantity) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.reduceProductQuantityJSON(id, quantity);
 
         if (result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
@@ -83,7 +92,10 @@ public class ProductResource {
 
     @POST
     @Consumes("application/x-www-form-urlencoded")
-    public Response createProduct(@FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
+    public Response createProduct(@HeaderParam("Authorization") String authHeader, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
         String result = service.createProduct(name, description, price, unit, quantity,quantityAvailable);
 
         if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
@@ -100,7 +112,11 @@ public class ProductResource {
     @DELETE
     @Path("{id}")
     @Produces("application/json")
-    public Response removeProduct(@PathParam("id") int id) {
+    public Response removeProduct(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+
         String result = service.removeProduct(id);
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
@@ -111,5 +127,23 @@ public class ProductResource {
         }
 
         return Response.status(Response.Status.OK).build();
+    }
+
+    @PATCH
+    @Consumes("application/x-www-form-urlencoded")
+    public Response createProduct(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
+        if(!authHeader.equals(authorizationToken)) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+        String result = service.updateProductJSON(id, name, description, price, unit, quantity, quantityAvailable);
+
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(result).build();
     }
 }

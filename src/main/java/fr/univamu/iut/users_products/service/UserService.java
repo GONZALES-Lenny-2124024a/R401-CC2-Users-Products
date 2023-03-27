@@ -164,4 +164,32 @@ public class UserService {
 
         return userJson;
     }
+
+    /**
+     * Method update the entire User tuple
+     * @param id the user's id
+     * @param email the user's email
+     * @param password the user's password
+     * @return the json of the User object or others specific status
+     */
+    public String updateUserJSON(int id, String email, String password) {
+        User user = userRepo.getUser(id);
+        if(user == null) {
+            return Errors.RESOURCE_NOT_EXISTS.getDescription();
+        }
+
+        user = userRepo.updateUser(id, email, password);
+        if(user == null) {
+            return Errors.INTERNAL_ERROR.getDescription();
+        }
+
+        String userJson = null;
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            userJson = jsonb.toJson(user);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return userJson;
+    }
 }
