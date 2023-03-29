@@ -8,7 +8,7 @@ There is 2 tokens for 2 scopes :
 - Users scope
 - Products scope
 
-Contact me to get theses tokens : lenny.gonzales@etu.univ-amu.fr
+Contact me to get these tokens : lenny.gonzales@etu.univ-amu.fr
 
 # 2. API endpoints
 All the endpoints return a Response
