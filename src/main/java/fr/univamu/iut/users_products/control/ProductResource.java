@@ -43,10 +43,10 @@ public class ProductResource {
     }
 
     public boolean isValidToken(String tokenReceived) {
-        if((tokenReceived == null) || (tokenReceived.startsWith("Bearer "))) {
+        if((tokenReceived == null) || !(tokenReceived.startsWith("Bearer "))) {
             return false;
         }
-        String token = tokenReceived.substring("Bearer".length()).trim();
+        String token = tokenReceived.substring("Bearer ".length()).trim();
 
         return token.equals(AUTHORIZATION_TOKEN);
     }
@@ -75,25 +75,6 @@ public class ProductResource {
 
         if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        return Response.ok(result).build();
-    }
-
-    @PATCH
-    @Path("{id}")
-    @Consumes("application/x-www-form-urlencoded")
-    public Response reduceProductQuantityAvailable(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, @FormParam("quantity") int quantity) {
-        if (!isValidToken(authHeader)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        String result = service.reduceProductQuantityJSON(id, quantity);
-
-        if (result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        if(result.equals(Errors.NOT_ENOUGH_QUANTITY.getDescription()) || result.equals(Errors.INTERNAL_ERROR.getDescription())) {
-            return Response.status(Response.Status.CONFLICT).build();
         }
 
         return Response.ok(result).build();
@@ -140,7 +121,7 @@ public class ProductResource {
 
     @PATCH
     @Consumes("application/x-www-form-urlencoded")
-    public Response createProduct(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
+    public Response updateProduct(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
         if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }

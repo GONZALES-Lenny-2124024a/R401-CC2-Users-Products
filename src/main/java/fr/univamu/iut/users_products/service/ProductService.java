@@ -57,36 +57,6 @@ public class ProductService {
         return productJson;
     }
 
-    public String reduceProductQuantityJSON(int id, int quantity) {
-        // Verify if the product exist
-        Product product = productRepo.getProductById(id);
-        if(product == null) {
-            return Errors.RESOURCE_NOT_EXISTS.getDescription();
-        }
-
-        // Verify if there is enough quantity
-        if(quantity > product.getQuantityAvailable()) {
-            return Errors.NOT_ENOUGH_QUANTITY.getDescription();
-        }
-
-        // Verify if the update worked
-        product.setQuantityAvailable(product.getQuantityAvailable() - quantity);
-        boolean status = productRepo.updateProduct(product);
-        if(!status) {
-            return Errors.INTERNAL_ERROR.getDescription();
-        }
-
-        // Get the json Product
-        String productJson = null;
-        try( Jsonb jsonb = JsonbBuilder.create()){
-            productJson = jsonb.toJson(product);
-        } catch (Exception e){
-            System.err.println( e.getMessage() );
-        }
-
-        return productJson;
-    }
-
 
     public String createProduct(String name, String description, float price, String unit, int quantity, int quantityAvailable) {
         Product product = new Product(name, description, price, unit, quantity,quantityAvailable);

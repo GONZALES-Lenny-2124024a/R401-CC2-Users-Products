@@ -56,14 +56,6 @@ public interface UserRepositoryInterface {
     boolean removeUser(int id);
 
     /**
-     * Method which update the user's password
-     * @param id the user's id
-     * @param password the user's password
-     * @return a User object or null (if the query failed
-     */
-    User updatePassword(int id, String password);
-
-    /**
      * Method which update the entire tuple except the id
      * @param id the user's id
      * @param email the user's email

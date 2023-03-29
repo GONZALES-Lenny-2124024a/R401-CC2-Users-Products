@@ -44,10 +44,10 @@ public class UserResource {
     }
 
     public boolean isValidToken(String tokenReceived) {
-        if((tokenReceived == null) || (tokenReceived.startsWith("Bearer "))) {
+        if((tokenReceived == null) || !(tokenReceived.startsWith("Bearer "))) {
             return false;
         }
-        String token = tokenReceived.substring("Bearer".length()).trim();
+        String token = tokenReceived.substring("Bearer ".length()).trim();
 
         return token.equals(AUTHORIZATION_TOKEN);
     }
@@ -148,26 +148,6 @@ public class UserResource {
     }
 
     @PATCH
-    @Path("/update/password/{id}")
-    @Consumes("application/x-www-form-urlencoded")
-    public Response updatePassword(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("password") String password) {
-        if (!isValidToken(authHeader)) {
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        }
-        String result = service.updatePasswordJSON(id, password);
-
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        }
-
-        return Response.ok(result).build();
-    }
-
-    @PATCH
-    @Path("/update/user/{id}")
     @Consumes("application/x-www-form-urlencoded")
     public Response updateUser(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("password") String email, @FormParam("password") String password) {
         if (!isValidToken(authHeader)) {
