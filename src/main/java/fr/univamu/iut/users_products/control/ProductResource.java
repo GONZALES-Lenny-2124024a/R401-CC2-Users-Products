@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/products")
 @ApplicationScoped
 public class ProductResource {
-    private static final String authorizationToken = "d8a0973dd27f506e0eafa1189dc181b6fcce7e1286a413398d39abcfb67341ee938f4a5f8e811836aa3fc363d5e268b3edc96594d936e9479d2f3f9449144e3f";
+    private static final String AUTHORIZATION_TOKEN = "d8a0973dd27f506e0eafa1189dc181b6fcce7e1286a413398d39abcfb67341ee938f4a5f8e811836aa3fc363d5e268b3edc96594d936e9479d2f3f9449144e3f";
 
     /**
      * Service utilisé pour accéder aux données des utilisateurs et récupérer/modifier leurs informations
@@ -42,6 +42,15 @@ public class ProductResource {
         this.service = service;
     }
 
+    public boolean isValidToken(String tokenReceived) {
+        if((tokenReceived == null) || (tokenReceived.startsWith("Bearer "))) {
+            return false;
+        }
+        String token = tokenReceived.substring("Bearer".length()).trim();
+
+        return token.equals(AUTHORIZATION_TOKEN);
+    }
+
     /**
      * Enpoint permettant de publier de tous les livres enregistrés
      * @return la liste des utilisateurs (avec leurs informations) au format JSON
@@ -49,7 +58,7 @@ public class ProductResource {
     @GET
     @Produces("application/json")
     public Response getAllProducts(@HeaderParam("Authorization") String authHeader) {
-        if(!authHeader.equals(authorizationToken)) {
+        if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         return Response.ok(service.getAllProductsJSON()).build();
@@ -59,7 +68,7 @@ public class ProductResource {
     @Path("{id}")
     @Produces("application/json")
     public Response getProductById(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
-        if(!authHeader.equals(authorizationToken)) {
+        if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         String result = service.getProductByIdJSON(id);
@@ -75,7 +84,7 @@ public class ProductResource {
     @Path("{id}")
     @Consumes("application/x-www-form-urlencoded")
     public Response reduceProductQuantityAvailable(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id, @FormParam("quantity") int quantity) {
-        if(!authHeader.equals(authorizationToken)) {
+        if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         String result = service.reduceProductQuantityJSON(id, quantity);
@@ -93,7 +102,7 @@ public class ProductResource {
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response createProduct(@HeaderParam("Authorization") String authHeader, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
-        if(!authHeader.equals(authorizationToken)) {
+        if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         String result = service.createProduct(name, description, price, unit, quantity,quantityAvailable);
@@ -113,7 +122,7 @@ public class ProductResource {
     @Path("{id}")
     @Produces("application/json")
     public Response removeProduct(@HeaderParam("Authorization") String authHeader, @PathParam("id") int id) {
-        if(!authHeader.equals(authorizationToken)) {
+        if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
@@ -132,7 +141,7 @@ public class ProductResource {
     @PATCH
     @Consumes("application/x-www-form-urlencoded")
     public Response createProduct(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
-        if(!authHeader.equals(authorizationToken)) {
+        if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
         String result = service.updateProductJSON(id, name, description, price, unit, quantity, quantityAvailable);
