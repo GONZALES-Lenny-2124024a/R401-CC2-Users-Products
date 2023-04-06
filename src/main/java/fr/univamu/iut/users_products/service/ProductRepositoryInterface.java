@@ -36,16 +36,16 @@ public interface ProductRepositoryInterface {
     /**
      * Method which update a product
      * @param product the new product object
-     * @return if the update worked or not
+     * @return the product if the update worked, or null if not
      */
-    boolean updateProduct(Product product);
+    Product updateProduct(Product product);
 
     /**
      * Method which create a product
      * @param product the product to create
-     * @return if the creation worked
+     * @return the product or null if the creation doesn't worked
      */
-    boolean createProduct(Product product);
+    Product createProduct(Product product);
 
     /**
      * Method which remove a product

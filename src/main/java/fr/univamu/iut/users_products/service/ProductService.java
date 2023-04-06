@@ -30,6 +30,7 @@ public class ProductService {
 
         ArrayList<Product> allProducts = productRepo.getAllProducts();
 
+        // Transform the list of Product on JSON format
         String result = null;
         try( Jsonb jsonb = JsonbBuilder.create()){
             result = jsonb.toJson(allProducts);
@@ -51,6 +52,8 @@ public class ProductService {
         if(product == null) {
             return Errors.RESOURCE_NOT_EXISTS.getDescription();
         }
+
+        // Transform the Product on JSON format
         String productJson = null;
         try( Jsonb jsonb = JsonbBuilder.create()){
             productJson = jsonb.toJson(product);
@@ -75,13 +78,15 @@ public class ProductService {
     public String createProduct(String name, String description, float price, String unit, int quantity, int quantityAvailable) {
         Product product = new Product(name, description, price, unit, quantity,quantityAvailable);
 
+        // verify if the product already exists
         Product productAlreadyExist = productRepo.getProduct(product);
         if(productAlreadyExist != null) {
             return Errors.ALREADY_EXISTS.getDescription();
         }
 
-        boolean status = productRepo.createProduct(product);
-        if(!status) {
+        // Create the product and verify if the creation worked
+        Product productCreation = productRepo.createProduct(product);
+        if(productCreation == null) {
             return Errors.INTERNAL_ERROR.getDescription();
         }
 
@@ -103,11 +108,13 @@ public class ProductService {
      * @return the description status
      */
     public String removeProduct(int id) {
+        // Verify if the Product exists
         Product product = productRepo.getProductById(id);
         if(product == null) {
             return Errors.RESOURCE_NOT_EXISTS.getDescription();
         }
 
+        // remove the product and verify if the deletion worked
         boolean status = productRepo.removeProduct(id);
         if(!status) {
             return Errors.INTERNAL_ERROR.getDescription();
@@ -128,17 +135,20 @@ public class ProductService {
      * @return the json of the Product object or others specific status
      */
     public String updateProductJSON(int id, String name, String description, float price, String unit, int quantity, int quantityAvailable) {
+        // Verify if the Product exists
         Product product = productRepo.getProductById(id);
         if(product == null) {
             return Errors.RESOURCE_NOT_EXISTS.getDescription();
         }
 
+        // Update the Product and verify if the update worked
         product = new Product(id,name, description, price, unit, quantity, quantityAvailable);
-        boolean status = productRepo.updateProduct(product);
-        if(!status) {
+        Product productUpdate = productRepo.updateProduct(product);
+        if(productUpdate == null) {
             return Errors.INTERNAL_ERROR.getDescription();
         }
 
+        // Get the Product on JSON format
         String productJson = null;
         try (Jsonb jsonb = JsonbBuilder.create()) {
             productJson = jsonb.toJson(product);

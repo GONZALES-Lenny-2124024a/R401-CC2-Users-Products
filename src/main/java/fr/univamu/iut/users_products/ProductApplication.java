@@ -21,7 +21,7 @@ public class ProductApplication  extends Application {
     public Set<Object> getSingletons() {
         Set<Object> set = new HashSet<>();
 
-        // Création de la connection à la base de données et initialisation du service associé
+        // Creating the database connection and initializing the associated service
         ProductService service = null ;
         try{
             ProductRepositoryMariadb db = new ProductRepositoryMariadb("jdbc:mariadb://mysql-gonzalesl.alwaysdata.net/gonzalesl_cc2", "gonzalesl_cc2", "e9rXXKmTfcQb3kV");
@@ -31,8 +31,7 @@ public class ProductApplication  extends Application {
             System.err.println(e.getMessage());
         }
 
-        // Création de la ressource en lui passant paramètre les services à exécuter en fonction
-        // des différents endpoints proposés (i.e. requêtes HTTP acceptées)
+        // Creation of the resource by passing it parameter the services to be executed according to the different endpoints proposed (i.e. HTTP requests accepted)
         set.add(new ProductResource(service));
 
         return set;

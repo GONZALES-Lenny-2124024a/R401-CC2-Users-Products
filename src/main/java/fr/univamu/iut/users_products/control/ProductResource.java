@@ -52,7 +52,7 @@ public class ProductResource {
         if((tokenReceived == null) || !(tokenReceived.startsWith("Bearer "))) {
             return false;
         }
-        String token = tokenReceived.substring("Bearer ".length()).trim();
+        String token = tokenReceived.substring("Bearer ".length()).trim();  // Extract the token without 'Bearer '
 
         return token.equals(AUTHORIZATION_TOKEN);
     }
@@ -112,7 +112,7 @@ public class ProductResource {
         }
         String result = service.createProduct(name, description, price, unit, quantity,quantityAvailable);
 
-        if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
+        if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {     // If the product already exists
             return Response.status( Response.Status.CONFLICT ).build();
         }
 
@@ -139,7 +139,7 @@ public class ProductResource {
 
         String result = service.removeProduct(id);
 
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {    // If the product doesn't exists
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
@@ -169,7 +169,7 @@ public class ProductResource {
         }
         String result = service.updateProductJSON(id, name, description, price, unit, quantity, quantityAvailable);
 
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {    // If the product doesn't exists
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {

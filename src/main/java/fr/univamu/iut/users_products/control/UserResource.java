@@ -53,7 +53,7 @@ public class UserResource {
         if((tokenReceived == null) || !(tokenReceived.startsWith("Bearer "))) {
             return false;
         }
-        String token = tokenReceived.substring("Bearer ".length()).trim();
+        String token = tokenReceived.substring("Bearer ".length()).trim(); // Extract the token without 'Bearer '
 
         return token.equals(AUTHORIZATION_TOKEN);
     }
@@ -88,7 +88,7 @@ public class UserResource {
 
         String result = service.getUserJSON(id);
 
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {    // If the product doesn't exists
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -112,7 +112,7 @@ public class UserResource {
 
         String result = service.authenticateJSON(email, password);
 
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {    // If the product doesn't exists
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -134,7 +134,7 @@ public class UserResource {
         }
         String result = service.registerUserJSON(email, password);
 
-        if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {
+        if(result.equals(Errors.ALREADY_EXISTS.getDescription())) {     // If the product already exists
             return Response.status( Response.Status.CONFLICT ).build();
         }
 
@@ -160,7 +160,7 @@ public class UserResource {
         }
         String result = service.removeUser(id);
 
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {    // If the product doesn't exists
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {
@@ -186,7 +186,7 @@ public class UserResource {
         }
         String result = service.updateUserJSON(id, email, password);
 
-        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {
+        if(result.equals(Errors.RESOURCE_NOT_EXISTS.getDescription())) {    // If the product doesn't exists
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         if(result.equals(Errors.INTERNAL_ERROR.getDescription())) {

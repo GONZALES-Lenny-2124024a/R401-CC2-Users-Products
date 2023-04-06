@@ -7,7 +7,6 @@ import fr.univamu.iut.users_products.service.UserRepositoryInterface;
 import java.io.Closeable;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 /**
  * Class for accessing users stored in a Mariadb database
@@ -54,19 +53,20 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
 
         String query = "SELECT * FROM Users";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
-            ResultSet result = ps.executeQuery();
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
+            ResultSet result = ps.executeQuery();   // execute the query
 
             listUsers = new ArrayList<>();
 
+            // while there is a tuple in the result
             while ( result.next() )
             {
                 int id = result.getInt("id");
                 String email = result.getString("email");
                 String password = result.getString("password");
 
+                // Create a new User and add it to the list
                 User user = new User(id, email, password);
-
                 listUsers.add(user);
             }
         } catch (SQLException e) {
@@ -86,15 +86,17 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         User selectedUser = null;
         String query = "SELECT * FROM Users WHERE email=?";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // create the prepared query
             ps.setString(1, email);
 
-            ResultSet result = ps.executeQuery();
+            ResultSet result = ps.executeQuery();   // execute the query
+
+            // If there is a tuple in the result
             if( result.next() ) {
                 int id = result.getInt("id");
                 String password = result.getString("password");
 
-                selectedUser = new User(id, email,password);
+                selectedUser = new User(id, email,password);    // create a new User
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -112,15 +114,17 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         User selectedUser = null;
         String query = "SELECT * FROM Users WHERE id=?";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setInt(1, id);
 
-            ResultSet result = ps.executeQuery();
+            ResultSet result = ps.executeQuery();   // execute the query
+
+            // If there is a tuple in the result
             if( result.next() ) {
                 String email = result.getString("email");
                 String password = result.getString("password");
 
-                selectedUser = new User(id, email,password);
+                selectedUser = new User(id, email,password);    // create a new User
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -139,15 +143,17 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         User selectedUser = null;
         String query = "SELECT * FROM Users WHERE email=? AND password=?";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setString(1, email);
             ps.setString(2,password);
 
-            ResultSet result = ps.executeQuery();
+            ResultSet result = ps.executeQuery();   // execute the query
+
+            // If there is a tuple in the result
             if( result.next() ) {
                 int id = result.getInt("id");
 
-                selectedUser = new User(id, email,password);
+                selectedUser = new User(id, email,password);    // Create a new User
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -167,12 +173,14 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         String query = "INSERT INTO Users (email, password) VALUES (?,?)";
 
         User user = null;
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setString(1, email);
             ps.setString(2,password);
 
-            ps.executeUpdate();
-            user = new User(email, password);
+            int result = ps.executeUpdate(); // execute the query
+            if(result > 0) {    // if the creation worked
+                user = new User(email, password);   // create a new user
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -189,9 +197,9 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
     public boolean removeUser(int id) {
         String query = "DELETE FROM Users WHERE ID=?";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // create the prepared query
             ps.setInt(1, id);
-            return (ps.executeUpdate() > 0);    // The deletion suceed
+            return (ps.executeUpdate() > 0);    // true if the deletion succeed (delete at least 1 tuple)
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -209,13 +217,15 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         String query = "UPDATE Users SET EMAIL=?, PASSWORD=? WHERE ID=?";
 
         User user = null;
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setString(1, email);
             ps.setString(2, password);
             ps.setInt(3,id);
 
-            ps.executeUpdate();
-            user = new User(id, email, password);
+            int result = ps.executeUpdate();     // execute the query
+            if(result > 0) {    // If the update worked (update at least 1 tuple)
+                user = new User(id, email, password);   // create a new User
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

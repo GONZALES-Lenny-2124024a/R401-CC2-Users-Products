@@ -51,11 +51,12 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
 
         String query = "SELECT * FROM Products";
 
-        try (PreparedStatement ps = dbConnection.prepareStatement(query)) {
-            ResultSet result = ps.executeQuery();
+        try (PreparedStatement ps = dbConnection.prepareStatement(query)) { // Create the prepared query
+            ResultSet result = ps.executeQuery();   // execute the query
 
             listProducts = new ArrayList<>();
 
+            // While there is a tuple
             while (result.next()) {
                 int id = result.getInt("id");
                 String name = result.getString("name");
@@ -65,9 +66,8 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
                 int quantity = result.getInt("quantity");
                 int quantityAvailable = result.getInt("quantityAvailable");
 
-
+                // create a new products and add it to the list
                 Product product = new Product(id, name, description, price, unit, quantity, quantityAvailable);
-
                 listProducts.add(product);
             }
         } catch (SQLException e) {
@@ -85,10 +85,12 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
         String query = "SELECT * FROM Products WHERE id=?";
         Product product = null;
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){     // Create the prepared query
             ps.setInt(1, id);
 
-            ResultSet result = ps.executeQuery();
+            ResultSet result = ps.executeQuery();   // execute the query
+
+            // if the query return a tuple
             if( result.next() ) {
                 String name = result.getString("name");
                 String description = result.getString("description");
@@ -97,7 +99,7 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
                 int quantity = result.getInt("quantity");
                 int quantityAvailable = result.getInt("quantityAvailable");
 
-                product = new Product(id, name, description,price, unit, quantity,quantityAvailable);
+                product = new Product(id, name, description,price, unit, quantity,quantityAvailable);   // create a new product
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -114,7 +116,7 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
         String query = "SELECT * FROM Products WHERE name=? AND description=? AND price=? AND unit=? AND quantity=? AND quantityAvailable=?";
         Product productSelected = null;
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){         // Create the prepared query
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
             ps.setFloat(3, product.getPrice());
@@ -122,11 +124,13 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
             ps.setInt(5, product.getQuantity());
             ps.setInt(6, product.getQuantityAvailable());
 
-            ResultSet result = ps.executeQuery();
+            ResultSet result = ps.executeQuery();   // execute the query
+
+            // If the query return a tuple
             if( result.next() ) {
                 int id = result.getInt("id");
 
-                productSelected = new Product(id, product.getName(), product.getDescription(), product.getPrice(), product.getUnit(), product.getQuantity(), product.getQuantityAvailable());
+                productSelected = new Product(id, product.getName(), product.getDescription(), product.getPrice(), product.getUnit(), product.getQuantity(), product.getQuantityAvailable()); // create a new Product
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -138,12 +142,12 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
     /**
      * Method which update a product
      * @param product the new product object
-     * @return if the update worked or not
+     * @return the product if the update worked, or null if not
      */
-    public boolean updateProduct(Product product) {
+    public Product updateProduct(Product product) {
         String query = "UPDATE Products SET name=?, description=?, price=?, quantity=?, unit=?, quantityAvailable=? WHERE id=?";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
             ps.setFloat(3, product.getPrice());
@@ -152,22 +156,25 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
             ps.setInt(6, product.getQuantityAvailable());
             ps.setInt(7,product.getId());
 
-            int result = ps.executeUpdate();
-            return (result > 0);
+            int result = ps.executeUpdate();    // execute the query
+            if (result > 0) {    // if the number of tuple update is greater than 0, return true
+                return product;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return null;
     }
 
     /**
      * Method which create a product
      * @param product the product to create
-     * @return if the creation worked
+     * @return thr Product or null if it doesn't worked
      */
-    public boolean createProduct(Product product) {
+    public Product createProduct(Product product) {
         String query = "INSERT INTO Products (name, description, price, quantity, unit, quantityAvailable) VALUES (?,?,?,?,?,?)";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
             ps.setFloat(3, product.getPrice());
@@ -175,11 +182,14 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
             ps.setString(5, product.getUnit());
             ps.setInt(6, product.getQuantityAvailable());
 
-            int result = ps.executeUpdate();
-            return (result > 0);
+            int result = ps.executeUpdate();    // execute the query
+            if (result > 0) {    // if the query create the object, this will return the number of tuples created (1 for our case)
+                return product;
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        return null;
     }
 
 
@@ -191,9 +201,9 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
     public boolean removeProduct(int id) {
         String query = "DELETE FROM Products WHERE ID=?";
 
-        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
+        try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
             ps.setInt(1, id);
-            return (ps.executeUpdate() > 0);
+            return (ps.executeUpdate() > 0);    // execute the query and verify that the deletion works (delete at least 1 tuple)
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
