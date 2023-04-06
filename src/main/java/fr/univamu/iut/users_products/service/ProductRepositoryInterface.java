@@ -4,10 +4,12 @@ import fr.univamu.iut.users_products.domain.Product;
 
 import java.util.ArrayList;
 
-
+/**
+ * The product repository interface (use to reverse the dependency)
+ */
 public interface ProductRepositoryInterface {
     /**
-     *  Méthode fermant le dépôt où sont stockées les informations sur les utilisateurs
+     * Method closing the repository where product information is stored
      */
     void close();
 

@@ -4,23 +4,26 @@ import fr.univamu.iut.users_products.domain.User;
 
 import java.util.ArrayList;
 
+/**
+ * The user repository interface (use to reverse the dependency)
+ */
 public interface UserRepositoryInterface {
 
     /**
-     *  Méthode fermant le dépôt où sont stockées les informations sur les utilisateurs
+     * Method closing the repository where product information is stored
      */
     void close();
 
     /**
-     * Méthode retournant la liste de tous les utilisateurs
-     * @return une liste d'objets User
+     * Method which return all the users
+     * @return a list with all the users
      */
     ArrayList<User> getAllUsers() ;
 
     /**
-     * Méthode retournant l'utilisateur dont l'id est passée en paramètre
-     * @param email Email de l'utilisateur
-     * @return un objet User représentant l'utilisateur recherché
+     * Method which return a User by its email
+     * @param email the user's email
+     * @return the User corresponding to this email
      */
     User getUser(String email);
 

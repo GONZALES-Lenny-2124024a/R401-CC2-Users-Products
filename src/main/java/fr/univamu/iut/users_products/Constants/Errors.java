@@ -1,5 +1,8 @@
 package fr.univamu.iut.users_products.Constants;
 
+/**
+ * Representing all the errors with a detailed description
+ */
 public enum Errors {
     // Generic errors
             ALREADY_EXISTS("The resource already exists"),
@@ -16,6 +19,10 @@ public enum Errors {
         this.description = description;
     }
 
+    /**
+     * Get the description of the error
+     * @return the description of the error
+     */
     public String getDescription() {
         return this.description;
     }

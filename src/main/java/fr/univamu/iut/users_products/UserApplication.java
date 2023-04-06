@@ -39,10 +39,8 @@ public class UserApplication  extends Application {
     }
 
     /**
-     * Méthode appelée par l'API CDI pour injecter la connection à la base de données au moment de la création
-     * de la ressource
-     * @return un objet implémentant l'interface BookRepositoryInterface utilisée
-     *          pour accéder aux données des livres, voire les modifier
+     * Method called by the CDI API to inject the connection to the database at resource creation time
+     * @return an object implementing the UserRepositoryInterface used to access or modify product data
      */
     @Produces
     private UserRepositoryInterface openDbConnection(){
@@ -58,8 +56,8 @@ public class UserApplication  extends Application {
     }
 
     /**
-     * Méthode permettant de fermer la connexion à la base de données lorsque l'application est arrêtée
-     * @param userRepo la connexion à la base de données instanciée dans la méthode @openDbConnection
+     * Method to close the database connection when the application is stopped
+     * @param userRepo the database connection instantiated in the @openDbConnection method
      */
     private void closeDbConnection(@Disposes UserRepositoryInterface userRepo ) {
         userRepo.close();

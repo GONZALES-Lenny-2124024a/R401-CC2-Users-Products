@@ -9,8 +9,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Ressource associée aux utilisateurs
- * (point d'accès de l'API REST)
+ * Resource associated with the users
+ * API access point
  */
 @Path("/users")
 @ApplicationScoped
@@ -19,30 +19,36 @@ public class UserResource {
 
 
     /**
-     * Service utilisé pour accéder aux données des utilisateurs et récupérer/modifier leurs informations
+     * Service used to access user data and retrieve/modify their information
      */
     private UserService service;
 
     /**
-     * Constructeur par défaut
+     * Default constructor
      */
     public UserResource(){}
 
     /**
-     * Constructeur permettant d'initialiser le service avec une interface d'accès aux données
-     * @param userRepo objet implémentant l'interface d'accès aux données
+     * Constructor to initialize the service with a data access interface
+     * @param userRepo object implementing the user repository interface
      */
     public @Inject UserResource( UserRepositoryInterface userRepo ){
         this.service = new UserService( userRepo) ;
     }
 
     /**
-     * Constructeur permettant d'initialiser le service d'accès aux livres
+     * Constructor to initialize the user access service
+     * @param service the user service
      */
     public UserResource( UserService service ){
         this.service = service;
     }
 
+    /**
+     * Method to know if the token provided is valid
+     * @param tokenReceived the token
+     * @return if the token is valid
+     */
     public boolean isValidToken(String tokenReceived) {
         if((tokenReceived == null) || !(tokenReceived.startsWith("Bearer "))) {
             return false;
@@ -53,8 +59,9 @@ public class UserResource {
     }
 
     /**
-     * Enpoint permettant de publier de tous les livres enregistrés
-     * @return la liste des utilisateurs (avec leurs informations) au format JSON
+     * Endpoint to get all the users on JSON format
+     * @param authHeader the header containing the authentication token
+     * @return Response status
      */
     @GET
     @Produces("application/json")
@@ -66,9 +73,10 @@ public class UserResource {
     }
 
     /**
-     * Endpoint permettant de publier les informations d'un livre dont la référence est passée paramètre dans le chemin
-     * @param id user's id
-     * @return les informations du livre recherché au format JSON
+     * Endpoint to get a user on JSON format
+     * @param authHeader the header containing the authentication token
+     * @param id the id of the wanted user
+     * @return Response status
      */
     @GET
     @Path("{id}")
@@ -88,9 +96,11 @@ public class UserResource {
     }
 
     /**
-     * Endpoint permettant de publier les informations d'un livre dont la référence est passée paramètre dans le chemin
-     * @param email email de l'utilisateur demandée
-     * @return les informations du livre recherché au format JSON
+     * Endpoint to know if the user exists
+     * @param authHeader the header containing the authentication token
+     * @param email the user email
+     * @param password the user password
+     * @return Response status
      */
     @POST
     @Path("/authenticate")
@@ -109,6 +119,13 @@ public class UserResource {
         return Response.ok(result).build();
     }
 
+    /**
+     * Endpoint to create a user
+     * @param authHeader the header containing the authentication token
+     * @param email the user email
+     * @param password the user password
+     * @return Response status
+     */
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response registerUser(@HeaderParam("Authorization") String authHeader, @FormParam("email") String email, @FormParam("password") String password) {
@@ -128,6 +145,12 @@ public class UserResource {
         return Response.ok(result).build();
     }
 
+    /**
+     * Endpoint to remove a user by its id
+     * @param authHeader the header containing the authentication token
+     * @param id the user id
+     * @return Response status
+     */
     @DELETE
     @Path("{id}")
     @Produces("application/json")
@@ -147,7 +170,15 @@ public class UserResource {
         return Response.status(Response.Status.OK).build();
     }
 
-    @PATCH
+    /**
+     * Endpoint to update a user
+     * @param authHeader the header containing the authentication token
+     * @param id the user id
+     * @param email the user email
+     * @param password the user password
+     * @return Response status
+     */
+    @PUT
     @Consumes("application/x-www-form-urlencoded")
     public Response updateUser(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("password") String email, @FormParam("password") String password) {
         if (!isValidToken(authHeader)) {

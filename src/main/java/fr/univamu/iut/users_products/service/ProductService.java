@@ -3,7 +3,6 @@ package fr.univamu.iut.users_products.service;
 import fr.univamu.iut.users_products.Constants.Errors;
 import fr.univamu.iut.users_products.Constants.Success;
 import fr.univamu.iut.users_products.domain.Product;
-import fr.univamu.iut.users_products.domain.User;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 
@@ -11,21 +10,21 @@ import java.util.ArrayList;
 
 public class ProductService {
     /**
-     * Objet permettant d'accéder au dépôt où sont stockées les informations sur les utilisateurs
+     * Object to access the repository where product information is stored
      */
     protected ProductRepositoryInterface productRepo ;
 
     /**
-     * Constructeur permettant d'injecter l'accès aux données
-     * @param productRepo objet implémentant l'interface d'accès aux données
+     * Constructor for injecting access to data
+     * @param productRepo object implementing the data access interface
      */
     public ProductService( ProductRepositoryInterface productRepo) {
         this.productRepo = productRepo;
     }
 
     /**
-     * Méthode retournant les informations (sans mail et mot de passe) sur les utilisateurs au format JSON
-     * @return une chaîne de caractère contenant les informations au format JSON
+     * Get all the products on JSON format
+     * @return json string
      */
     public String getAllProductsJSON(){
 
@@ -42,6 +41,11 @@ public class ProductService {
         return result;
     }
 
+    /**
+     * Get a product on JSON format
+     * @param id the id of the wanted product
+     * @return json string or a Errors description
+     */
     public String getProductByIdJSON(int id) {
         Product product = productRepo.getProductById(id);
         if(product == null) {
@@ -58,6 +62,16 @@ public class ProductService {
     }
 
 
+    /**
+     * Create a product on JSON format
+     * @param name the product name
+     * @param description the product description
+     * @param price the product price
+     * @param unit the product unit
+     * @param quantity the product quantity
+     * @param quantityAvailable the product quantityAvailable
+     * @return json string or a Errors description
+     */
     public String createProduct(String name, String description, float price, String unit, int quantity, int quantityAvailable) {
         Product product = new Product(name, description, price, unit, quantity,quantityAvailable);
 
@@ -103,7 +117,7 @@ public class ProductService {
     }
 
     /**
-     * Method which update the entire Product tuple
+     * Method which update the entire Product tuple and return the Product on JSON format
      * @param id the product's id
      * @param name the product's name
      * @param description the product's description

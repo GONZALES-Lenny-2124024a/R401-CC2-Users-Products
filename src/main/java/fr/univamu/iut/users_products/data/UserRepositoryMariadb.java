@@ -10,27 +10,31 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
- * Classe permettant d'accèder aux utilisateurs stockés dans une base de données Mariadb
+ * Class for accessing users stored in a Mariadb database
  */
 public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable {
 
     /**
-     * Accès à la base de données (session)
+     * Access to the database
      */
     protected Connection dbConnection ;
 
     /**
-     * Constructeur de la classe
-     * @param infoConnection chaîne de caractères avec les informations de connexion
+     * Constructor
+     *
+     * @param infoConnection string with login information
      *                       (p.ex. jdbc:mariadb://mysql-[compte].alwaysdata.net/[compte]_library_db
-     * @param user chaîne de caractères contenant l'identifiant de connexion à la base de données
-     * @param pwd chaîne de caractères contenant le mot de passe à utiliser
+     * @param user           string containing the database login
+     * @param pwd            character string containing the database password
      */
     public UserRepositoryMariadb(String infoConnection, String user, String pwd ) throws java.sql.SQLException, java.lang.ClassNotFoundException {
         Class.forName("org.mariadb.jdbc.Driver");
         dbConnection = DriverManager.getConnection( infoConnection, user, pwd ) ;
     }
 
+    /**
+     * Method closing the repository where product information is stored
+     */
     @Override
     public void close() {
         try{
@@ -41,26 +45,26 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         }
     }
 
+    /**
+     * Method which return all the users
+     * @return a list with all the users
+     */
     public ArrayList<User> getAllUsers() {
         ArrayList<User> listUsers ;
 
         String query = "SELECT * FROM Users";
 
-        // construction et exécution d'une requête préparée
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){
-            // exécution de la requête
             ResultSet result = ps.executeQuery();
 
             listUsers = new ArrayList<>();
 
-            // récupération du premier (et seul) tuple résultat
             while ( result.next() )
             {
                 int id = result.getInt("id");
                 String email = result.getString("email");
                 String password = result.getString("password");
 
-                // création du livre courant
                 User user = new User(id, email, password);
 
                 listUsers.add(user);
@@ -71,10 +75,11 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
         return listUsers;
     }
 
+
     /**
-     * Méthode retournant l'utilisateur dont l'id est passée en paramètre
-     * @param email Email de l'utilisateur
-     * @return un objet User représentant l'utilisateur recherché
+     * Method which return a User by its email
+     * @param email the user's email
+     * @return the User corresponding to this email
      */
     @Override
     public User getUser(String email) {

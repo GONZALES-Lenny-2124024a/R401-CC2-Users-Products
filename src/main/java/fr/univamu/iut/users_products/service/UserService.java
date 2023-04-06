@@ -5,38 +5,35 @@ import fr.univamu.iut.users_products.Constants.Success;
 import fr.univamu.iut.users_products.domain.User;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
-import jakarta.ws.rs.NotFoundException;
 
 import java.util.ArrayList;
 
 public class UserService {
     /**
-     * Objet permettant d'accéder au dépôt où sont stockées les informations sur les utilisateurs
+     * Object to access the repository where user information is stored
      */
     protected UserRepositoryInterface userRepo ;
 
     /**
-     * Constructeur permettant d'injecter l'accès aux données
-     * @param userRepo objet implémentant l'interface d'accès aux données
+     * Constructor for injecting access to data
+     * @param userRepo object implementing the data access interface
      */
     public UserService( UserRepositoryInterface userRepo) {
         this.userRepo = userRepo;
     }
 
     /**
-     * Méthode retournant les informations (sans mail et mot de passe) sur les utilisateurs au format JSON
-     * @return une chaîne de caractère contenant les informations au format JSON
+     * Get all the users on JSON format
+     * @return json string
      */
     public String getAllUsersJSON(){
 
         ArrayList<User> allUsers = userRepo.getAllUsers();
 
-        // on supprime les informations sur les mots de passe et les mails
         for( User currentUser : allUsers ){
             currentUser.setPassword("");
         }
 
-        // création du json et conversion de la liste de livres
         String result = null;
         try( Jsonb jsonb = JsonbBuilder.create()){
             result = jsonb.toJson(allUsers);
@@ -49,9 +46,9 @@ public class UserService {
     }
 
     /**
-     * Méthode retournant au format JSON les informations sur un utilisateur recherché
-     * @param id user's id
-     * @return une chaîne de caractère contenant les informations au format JSON
+     * Get a user on JSON format
+     * @param id the id of the wanted user
+     * @return Response status
      */
     public String getUserJSON( int id ){
         String result = null;
@@ -72,7 +69,7 @@ public class UserService {
      * Method which return the json of the User
      * @param email user's email
      * @param password user's password
-     * @return the User object or null if it doesn't exist
+     * @return the User object on JSON format or an Errors description
      */
     public String authenticateJSON(String email, String password){
         String result = null;
@@ -95,7 +92,7 @@ public class UserService {
      * Method to register an user and return the json of the user or an error
      * @param email user's email
      * @param password user's password
-     * @return Json of the user object
+     * @return Json of the user object or an Errors description
      */
     public String registerUserJSON(String email, String password) {
         // Verify if the resource already exists
@@ -139,7 +136,7 @@ public class UserService {
     }
 
     /**
-     * Method update the entire User tuple
+     * Method update the entire User tuple on JSON format
      * @param id the user's id
      * @param email the user's email
      * @param password the user's password

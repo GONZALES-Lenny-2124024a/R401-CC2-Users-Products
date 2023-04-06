@@ -1,7 +1,6 @@
 package fr.univamu.iut.users_products.data;
 
 import fr.univamu.iut.users_products.domain.Product;
-import fr.univamu.iut.users_products.domain.User;
 import fr.univamu.iut.users_products.service.ProductRepositoryInterface;
 
 import java.io.Closeable;
@@ -9,22 +8,22 @@ import java.sql.*;
 import java.util.ArrayList;
 
 /**
- * Classe permettant d'accèder aux utilisateurs stockés dans une base de données Mariadb
+ * Class for accessing products stored in a Mariadb database
  */
 public class ProductRepositoryMariadb implements ProductRepositoryInterface, Closeable {
 
     /**
-     * Accès à la base de données (session)
+     * Access to the database
      */
     protected Connection dbConnection;
 
     /**
-     * Constructeur de la classe
+     * Constructor
      *
-     * @param infoConnection chaîne de caractères avec les informations de connexion
+     * @param infoConnection string with login information
      *                       (p.ex. jdbc:mariadb://mysql-[compte].alwaysdata.net/[compte]_library_db
-     * @param user           chaîne de caractères contenant l'identifiant de connexion à la base de données
-     * @param pwd            chaîne de caractères contenant le mot de passe à utiliser
+     * @param user           string containing the database login
+     * @param pwd            character string containing the database password
      */
     public ProductRepositoryMariadb(String infoConnection, String user, String pwd) throws java.sql.SQLException, java.lang.ClassNotFoundException {
         Class.forName("org.mariadb.jdbc.Driver");
@@ -32,7 +31,7 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
     }
 
     /**
-     *  Méthode fermant le dépôt où sont stockées les informations sur les utilisateurs
+     * Method closing the repository where product information is stored
      */
     @Override
     public void close() {
@@ -52,14 +51,11 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
 
         String query = "SELECT * FROM Products";
 
-        // construction et exécution d'une requête préparée
         try (PreparedStatement ps = dbConnection.prepareStatement(query)) {
-            // exécution de la requête
             ResultSet result = ps.executeQuery();
 
             listProducts = new ArrayList<>();
 
-            // récupération du premier (et seul) tuple résultat
             while (result.next()) {
                 int id = result.getInt("id");
                 String name = result.getString("name");
@@ -70,7 +66,6 @@ public class ProductRepositoryMariadb implements ProductRepositoryInterface, Clo
                 int quantityAvailable = result.getInt("quantityAvailable");
 
 
-                // création du livre courant
                 Product product = new Product(id, name, description, price, unit, quantity, quantityAvailable);
 
                 listProducts.add(product);

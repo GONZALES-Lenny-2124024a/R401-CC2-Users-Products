@@ -9,8 +9,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 /**
- * Ressource associée aux utilisateurs
- * (point d'accès de l'API REST)
+ * Resource associated with the products
+ * API access point
  */
 @Path("/products")
 @ApplicationScoped
@@ -18,30 +18,36 @@ public class ProductResource {
     private static final String AUTHORIZATION_TOKEN = "d8a0973dd27f506e0eafa1189dc181b6fcce7e1286a413398d39abcfb67341ee938f4a5f8e811836aa3fc363d5e268b3edc96594d936e9479d2f3f9449144e3f";
 
     /**
-     * Service utilisé pour accéder aux données des utilisateurs et récupérer/modifier leurs informations
+     * Service used to access product data and retrieve/modify their information
      */
     private ProductService service;
 
     /**
-     * Constructeur par défaut
+     * Default constructor
      */
     public ProductResource(){}
 
     /**
-     * Constructeur permettant d'initialiser le service avec une interface d'accès aux données
-     * @param productRepo objet implémentant l'interface d'accès aux données
+     * Constructor to initialize the service with a data access interface
+     * @param productRepo object implementing the product repository interface
      */
     public @Inject ProductResource( ProductRepositoryInterface productRepo ){
         this.service = new ProductService( productRepo) ;
     }
 
     /**
-     * Constructeur permettant d'initialiser le service d'accès aux livres
+     * Constructor to initialize the product access service
+     * @param service the product service
      */
     public ProductResource( ProductService service ){
         this.service = service;
     }
 
+    /**
+     * Method to know if the token provided is valid
+     * @param tokenReceived the token
+     * @return if the token is valid
+     */
     public boolean isValidToken(String tokenReceived) {
         if((tokenReceived == null) || !(tokenReceived.startsWith("Bearer "))) {
             return false;
@@ -52,8 +58,9 @@ public class ProductResource {
     }
 
     /**
-     * Enpoint permettant de publier de tous les livres enregistrés
-     * @return la liste des utilisateurs (avec leurs informations) au format JSON
+     * Endpoint to get all the products on JSON format
+     * @param authHeader the header containing the authentication token
+     * @return Response status
      */
     @GET
     @Produces("application/json")
@@ -64,6 +71,12 @@ public class ProductResource {
         return Response.ok(service.getAllProductsJSON()).build();
     }
 
+    /**
+     * Endpoint to get a product on JSON format
+     * @param authHeader the header containing the authentication token
+     * @param id the id of the wanted product
+     * @return Response status
+     */
     @GET
     @Path("{id}")
     @Produces("application/json")
@@ -80,6 +93,17 @@ public class ProductResource {
         return Response.ok(result).build();
     }
 
+    /**
+     * Endpoint to create a product and return the product on JSON format
+     * @param authHeader the header containing the authentication token
+     * @param name the product name
+     * @param description the product description
+     * @param price the product price
+     * @param unit the product unit
+     * @param quantity the product quantity
+     * @param quantityAvailable the product quantityAvailable
+     * @return Response status
+     */
     @POST
     @Consumes("application/x-www-form-urlencoded")
     public Response createProduct(@HeaderParam("Authorization") String authHeader, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
@@ -99,6 +123,12 @@ public class ProductResource {
         return Response.ok(result).build();
     }
 
+    /**
+     * Endpoint to remove a product by its id
+     * @param authHeader the header containing the authentication token
+     * @param id the product id
+     * @return Response status
+     */
     @DELETE
     @Path("{id}")
     @Produces("application/json")
@@ -119,7 +149,19 @@ public class ProductResource {
         return Response.status(Response.Status.OK).build();
     }
 
-    @PATCH
+    /**
+     * Endpoint to update a product
+     * @param authHeader the header containing the authentication token
+     * @param id the product id
+     * @param name the product name
+     * @param description the product description
+     * @param price the product price
+     * @param unit the product unit
+     * @param quantity the product quantity
+     * @param quantityAvailable the product quantityAvailable
+     * @return Response status
+     */
+    @PUT
     @Consumes("application/x-www-form-urlencoded")
     public Response updateProduct(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("name") String name, @FormParam("description") String description, @FormParam("price") float price, @FormParam("unit") String unit, @FormParam("quantity") int quantity, @FormParam("quantityAvailable") int quantityAvailable) {
         if (!isValidToken(authHeader)) {
