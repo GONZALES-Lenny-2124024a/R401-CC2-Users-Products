@@ -180,7 +180,7 @@ public class UserResource {
      */
     @PUT
     @Consumes("application/x-www-form-urlencoded")
-    public Response updateUser(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("password") String email, @FormParam("password") String password) {
+    public Response updateUser(@HeaderParam("Authorization") String authHeader, @FormParam("id") int id, @FormParam("email") String email, @FormParam("password") String password) {
         if (!isValidToken(authHeader)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
