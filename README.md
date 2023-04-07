@@ -30,7 +30,7 @@ curl -X POST \
 ```
 
 ```
-curl -X PATCH \
+curl -X PUT \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/users \
   -H 'Authorization: {token}' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
@@ -75,7 +75,7 @@ curl -X POST \
   -d 'name={name}&description={description}&price={price}&unit={unit}&quantity={quantity}&quantityAvailable={quantityAvailable}'
 ```
 ```
-curl -X PATCH \
+curl -X PUT \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/products \
   -H 'Authorization: {token}' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
