@@ -164,28 +164,27 @@ public class UserRepositoryMariadb implements UserRepositoryInterface, Closeable
 
     /**
      * Method which create an user
-     * @param email the user's email
-     * @param password the user's password
+     * @param user the user to add
      * @return User the User returned
      */
     @Override
-    public User registerUser(String email, String password) {
+    public User registerUser(User user) {
         String query = "INSERT INTO Users (email, password) VALUES (?,?)";
 
-        User user = null;
+        User userToReturned = null;
         try ( PreparedStatement ps = dbConnection.prepareStatement(query) ){    // Create the prepared query
-            ps.setString(1, email);
-            ps.setString(2,password);
+            ps.setString(1, user.getEmail());
+            ps.setString(2,user.getPassword());
 
             int result = ps.executeUpdate(); // execute the query
             if(result > 0) {    // if the creation worked
-                user = new User(email, password);   // create a new user
+                userToReturned = new User(user.getEmail(), user.getPassword());   // create a new user
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        return user;
+        return userToReturned;
     }
 
 

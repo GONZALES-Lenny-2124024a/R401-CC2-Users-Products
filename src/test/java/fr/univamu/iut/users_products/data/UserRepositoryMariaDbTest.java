@@ -44,8 +44,7 @@ public class UserRepositoryMariaDbTest {
     @Test
     public void shouldRegisterAndRemoveUser() {
         User user = new User("-1", "-1");
-        assertInstanceOf(User.class, userRepositoryMariadb.registerUser(user.getEmail(), user.getPassword()));
-
+        assertInstanceOf(User.class, userRepositoryMariadb.registerUser(user));
         assertTrue(userRepositoryMariadb.removeUser(userRepositoryMariadb.getUser(user.getEmail(), user.getPassword()).getId()));
     }
 }

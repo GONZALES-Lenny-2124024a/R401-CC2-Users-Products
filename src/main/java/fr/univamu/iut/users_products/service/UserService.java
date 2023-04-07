@@ -109,7 +109,7 @@ public class UserService {
         }
 
         // Create the user and verify if the creation worked
-        user = userRepo.registerUser(email, password);
+        user = userRepo.registerUser(new User(email, password));
         if(user == null) {
             return Errors.INTERNAL_ERROR.getDescription();
         }

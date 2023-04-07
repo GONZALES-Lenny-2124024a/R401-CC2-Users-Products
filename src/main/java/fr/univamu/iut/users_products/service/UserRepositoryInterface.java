@@ -45,11 +45,10 @@ public interface UserRepositoryInterface {
 
     /**
      * Method which create a user
-     * @param email the user's email
-     * @param password the user's password
+     * @param user the user to add
      * @return User the User returned
      */
-    User registerUser(String email, String password);
+    User registerUser(User user);
 
     /**
      * Method which remove a user
