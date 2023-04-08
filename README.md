@@ -15,12 +15,15 @@ All the endpoints return a Response
 
 ## API Users => /users
 
+---
+<b>Get all users</b>
 ```
 curl -X GET \
 http://localhost:8080/users_products-1.0-SNAPSHOT/api/users \
 -H 'Authorization: {token}'
 ```
-
+---
+<b>Create a user</b>
 ```
 curl -X POST \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/users \
@@ -28,7 +31,8 @@ curl -X POST \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d 'email={email}}&password={password}'
 ```
-
+---
+<b>Modify a user</b>
 ```
 curl -X PUT \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/users \
@@ -36,20 +40,24 @@ curl -X PUT \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d 'id={id}&email={email}&password={password}'
 ```
-
+---
+<b>Get a user by its id</b>
 - /{id}
 ```
 curl -X GET \
 http://localhost:8080/users_products-1.0-SNAPSHOT/api/users/{id} \
 -H 'Authorization: {token}'
 ```
-
+---
+<b>Delete a user by its id</b>
 ```
 curl -X DELETE \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/users/{id} \
   -H 'Authorization: {token}'
 ```
 
+---
+<b>Know if a user and its password exists</b>
 - /authenticate
 ```
 curl -X POST \
@@ -62,11 +70,15 @@ curl -X POST \
 
 ## API Products => /products
 
+---
+<b>Get all products</b>
 ```
 curl -X GET \
 http://localhost:8080/users_products-1.0-SNAPSHOT/api/products \
 -H 'Authorization: {token}'
 ```
+---
+<b>Create a product</b>
 ```
 curl -X POST \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/products \
@@ -74,6 +86,8 @@ curl -X POST \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d 'name={name}&description={description}&price={price}&unit={unit}&quantity={quantity}&quantityAvailable={quantityAvailable}'
 ```
+---
+<b>Modify a product</b>
 ```
 curl -X PUT \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/products \
@@ -82,13 +96,16 @@ curl -X PUT \
   -d 'id={id}&name={name}&description={description}&price={price}&unit={unit}&quantity={quantity}&quantityAvailable={quantityAvailable}'
 ```
 
+---
+<b>Get a product by its id</b>
 - /{id}
 ```
 curl -X GET \
 http://localhost:8080/users_products-1.0-SNAPSHOT/api/products/{id} \
 -H 'Authorization: {token}'
 ```
-
+---
+<b>Delete a product by its id</b>
 ```
 curl -X DELETE \
   http://localhost:8080/users_products-1.0-SNAPSHOT/api/products/{id} \
